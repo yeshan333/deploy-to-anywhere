@@ -1,6 +1,7 @@
 name: Deploy RSSHub to Heroku
 
 on:
+  workflow_dispatch: # Allows manual triggering of the workflow
   push:
     branches:
       - main
@@ -23,4 +24,7 @@ jobs:
           heroku auth:whoami
           docker pull diygod/rsshub
           docker tag diygod/rsshub registry.heroku.com/${{secrets.HEROKU_APP_NAME}}/web
-          heroku container:release web -a ${{secrets.HEROKU_APP_NAME}}
+          heroku container:login
+          # update the image
+          docker push registry.heroku.com/${{secrets.HEROKU_APP_NAME}}/web
+          heroku container:release web -a ${{secrets.HEROKU_APP_NAME}} -v
